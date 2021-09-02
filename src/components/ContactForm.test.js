@@ -56,9 +56,7 @@ test("renders ONE error message if user enters a valid first name and last name 
   const emailInput = screen.getByLabelText(/email*/i);
   userEvent.type(emailInput, "j");
 
-  const emailValidation = screen.getByText(
-    /Error: email must be a valid email address./i
-  );
+  const emailValidation = screen.getByText(/Error/i);
   expect(emailValidation).toBeInTheDocument();
 });
 
@@ -98,8 +96,38 @@ test("renders all firstName, lastName and email text when submitted. Does NOT re
 
   const submittedForm = screen.getByText(/You submitted:/i);
   expect(submittedForm).toBeInTheDocument();
+  const firstNameSubmitted = screen.getByText(/Qwerty/i);
+  expect(firstNameSubmitted).toBeInTheDocument();
+  const lastNameSubmitted = screen.getByText(/Please/i);
+  expect(lastNameSubmitted).toBeInTheDocument();
+  const emailSubmitted = screen.getByText(/email@email.com/i);
+  expect(emailSubmitted).toBeInTheDocument();
 });
 
-test('renders all fields text when all fields are submitted.', async () => {
-    
+test("renders all fields text when all fields are submitted.", async () => {
+  render(<ContactForm />);
+
+  const firstNameInput = screen.queryByLabelText(/First Name*/i);
+  userEvent.type(firstNameInput, "Qwerty");
+  const lastNameInput = screen.queryByLabelText(/Last Name*/i);
+  userEvent.type(lastNameInput, "Please");
+  const emailInput = screen.queryByLabelText(/email*/i);
+  userEvent.type(emailInput, "email@email.com");
+  const messageInput = screen.queryByLabelText(/Message/i);
+  userEvent.type(messageInput, "Brute");
+  const submitFormButton = screen.getByRole("button");
+  userEvent.click(submitFormButton);
+
+  await waitFor(() => {
+    const submittedForm = screen.queryByText(/You submitted:/i);
+    expect(submittedForm).toBeInTheDocument();
+    const firstNameSubmitted = screen.queryByText(/Qwerty/i);
+    expect(firstNameSubmitted).toBeInTheDocument();
+    const lastNameSubmitted = screen.queryByText(/Please/i);
+    expect(lastNameSubmitted).toBeInTheDocument();
+    const emailSubmitted = screen.queryByText(/email@email.com/i);
+    expect(emailSubmitted).toBeInTheDocument();
+    const messageSubmitted = screen.queryByText(/brute/i);
+    expect(messageSubmitted).toBeInTheDocument();
+  });
 });
